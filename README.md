@@ -55,15 +55,19 @@ screens/ChatScreen/
 └── hooks/                 # Custom hooks for chat behavior
     ├── useAutoScroll.ts   # Intelligent scroll management
     ├── useChatAnimations.ts # Animation state management
+    ├── useFlashlistItems.ts # FlashList data management and optimization
     ├── useScrollState.ts  # User scroll tracking
+    ├── useScrollToBottomButton.ts # Scroll button visibility logic
     └── useSuggestionsVisibility.ts # Suggestion display logic
 
 components/
 ├── Message.tsx            # Individual message with actions and streaming
+├── MessageListItem.tsx    # FlashList item renderer for different message types
 ├── Composer.tsx           # Multiline input with keyboard handling
 ├── ChatHeader.tsx         # Top navigation bar
 ├── TypingIndicator.tsx    # Animated typing indicator
 ├── MessageSuggestions.tsx # Empty state suggestions
+├── ScrollToBottomButton.tsx # Animated scroll-to-bottom button
 ├── WeatherWidget.tsx      # Weather tool widget with ChatGPT-style UI
 └── ThemedText.tsx         # Themed text component
 ```
@@ -83,7 +87,7 @@ useAutoScroll({
   messages,           // Current message array
   isLoading,         // Streaming state
   userScrolled,      // Whether user manually scrolled
-  scrollViewRef,     // ScrollView reference
+  scrollViewRef,     // FlashList reference
 });
 ```
 
@@ -303,7 +307,7 @@ FlashList is a performant alternative to React Native's FlatList and ScrollView 
 The chat messages are transformed into a structured format optimized for FlashList:
 
 ```typescript
-interface MessageListItem {
+interface MessageListItemType {
   id: string;
   type: 'message' | 'suggestions' | 'typing' | 'error';
   data?: UIMessage | string | Error;
@@ -312,12 +316,49 @@ interface MessageListItem {
 
 This approach allows FlashList to efficiently handle different item types (messages, suggestions, typing indicators, errors) while maintaining smooth scrolling performance.
 
+#### **Message List Item Rendering**
+
+The `MessageListItem` component handles different message types with specialized rendering:
+
+```typescript
+// MessageListItem component with type-specific rendering
+<MessageListItem
+  item={item}
+  onSuggestionPress={handleSuggestionPress}
+/>
+```
+
+Features:
+- **Type-based rendering** for messages, suggestions, typing indicators, and errors
+- **Error state handling** with styled error containers and user-friendly messages
+- **Suggestion integration** with proper touch handling and callbacks
+- **Consistent theming** across all message types
+
 #### **Performance Benefits**
 
 - **Scalability**: Can handle thousands of messages without performance degradation
 - **Memory Management**: Automatic cleanup of off-screen components prevents memory leaks
 - **Smooth Scrolling**: Maintains 60fps even with complex message layouts and animations
 - **Battery Efficiency**: Reduced CPU usage leads to better battery life on mobile devices
+
+#### **Scroll-to-Bottom Button**
+
+The app includes an intelligent scroll-to-bottom button that appears when users scroll up:
+
+```typescript
+// Scroll-to-bottom button with smart visibility
+<ScrollToBottomButton
+  visible={showButton}
+  onPress={handleScrollToBottom}
+/>
+```
+
+Features:
+- **Smart visibility** that only shows when user scrolls up from bottom
+- **Smooth animations** with scale and translate effects
+- **Haptic feedback** on press for tactile confirmation
+- **Auto-hide** when user reaches bottom or new messages arrive
+- **Throttled scroll detection** for optimal performance
 
 #### **Additional Performance Optimizations**
 
