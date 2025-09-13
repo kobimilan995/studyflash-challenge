@@ -265,6 +265,62 @@ The app is designed to be easily customizable:
 
 ## 📊 **Performance Optimizations**
 
+### **FlashList Integration for Large Message Lists**
+
+This implementation uses **@shopify/flash-list** instead of the standard ScrollView to handle large conversation histories with optimal performance. FlashList is a high-performance list component that provides significant performance improvements over traditional scrolling solutions.
+
+#### **What is FlashList?**
+FlashList is a performant alternative to React Native's FlatList and ScrollView that uses advanced virtualization techniques to render only visible items. It provides:
+
+- **Virtualization**: Only renders items currently visible on screen, dramatically reducing memory usage
+- **Component Recycling**: Reuses components as users scroll, eliminating the overhead of creating/destroying components
+- **Superior Performance**: Up to 5x better FPS on UI thread and 10x better FPS on JavaScript thread compared to FlatList
+- **Memory Efficiency**: Prevents memory bloat with large datasets by dynamically loading/unloading items
+
+#### **Implementation Details**
+
+```typescript
+// FlashList integration in ChatScreen
+<FlashList
+  ref={flashListRef}
+  data={listData}
+  renderItem={({ item }) => (
+    <MessageListItem
+      item={item}
+      onSuggestionPress={handleSuggestionPress}
+    />
+  )}
+  keyExtractor={item => item.id}
+  onScroll={handleScroll}
+  scrollEventThrottle={16}
+  showsVerticalScrollIndicator={false}
+  contentContainerStyle={styles.contentContainer}
+/>
+```
+
+#### **Data Structure Optimization**
+
+The chat messages are transformed into a structured format optimized for FlashList:
+
+```typescript
+interface MessageListItem {
+  id: string;
+  type: 'message' | 'suggestions' | 'typing' | 'error';
+  data?: UIMessage | string | Error;
+}
+```
+
+This approach allows FlashList to efficiently handle different item types (messages, suggestions, typing indicators, errors) while maintaining smooth scrolling performance.
+
+#### **Performance Benefits**
+
+- **Scalability**: Can handle thousands of messages without performance degradation
+- **Memory Management**: Automatic cleanup of off-screen components prevents memory leaks
+- **Smooth Scrolling**: Maintains 60fps even with complex message layouts and animations
+- **Battery Efficiency**: Reduced CPU usage leads to better battery life on mobile devices
+
+#### **Additional Performance Optimizations**
+
 - **Memoized components** to prevent unnecessary re-renders
 - **Efficient scroll handling** with proper event throttling
 - **Optimized animations** using native drivers
