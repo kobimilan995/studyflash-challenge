@@ -9,14 +9,13 @@ import {
   Dimensions,
   StyleSheet,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import Markdown from 'react-native-markdown-display';
 import { WeatherWidget } from './WeatherWidget';
 
 interface MessageProps {
   message: UIMessage;
-  isStreaming?: boolean;
   onLike?: () => void;
   onDislike?: () => void;
   onCopy?: () => void;
