@@ -15,15 +15,16 @@ export function useChatAnimations({ messagesLength, error }: UseChatAnimationsPr
   // Handle fade animation for suggestions
   useEffect(() => {
     if (messagesLength > 0) {
+      // Hide suggestions when messages are present
       Animated.timing(fadeAnim, {
-        toValue: 1,
+        toValue: 0,
         duration: 300,
         useNativeDriver: true,
       }).start();
     } else {
       // Show suggestions when chat is empty
       Animated.timing(fadeAnim, {
-        toValue: 0,
+        toValue: 1,
         duration: 300,
         useNativeDriver: true,
       }).start();
