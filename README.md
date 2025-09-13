@@ -64,6 +64,7 @@ components/
 ├── ChatHeader.tsx         # Top navigation bar
 ├── TypingIndicator.tsx    # Animated typing indicator
 ├── MessageSuggestions.tsx # Empty state suggestions
+├── WeatherWidget.tsx      # Weather tool widget with ChatGPT-style UI
 └── ThemedText.tsx         # Themed text component
 ```
 
@@ -141,7 +142,21 @@ Features:
 - **Proper contrast ratios** for accessibility
 - **System theme detection** with manual override capability
 
-#### **5. API Integration**
+#### **5. Weather Widget Component**
+```typescript
+// Standalone weather widget with ChatGPT-style UI
+<WeatherWidget data={weatherData} />
+```
+
+Features:
+- **ChatGPT-inspired design** with proper spacing and typography
+- **Temperature conversion** from Fahrenheit to Celsius
+- **Realistic weather data** with location, conditions, and forecasts
+- **Interactive elements** with expandable details
+- **Consistent theming** that adapts to light/dark modes
+- **Proper error handling** with fallback values
+
+#### **6. API Integration**
 ```typescript
 // Streaming API with tool calling
 const result = streamText({
