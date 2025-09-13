@@ -27,16 +27,6 @@ export function ScrollToBottomButton({
     }).start();
   }, [visible, animatedValue]);
 
-  const buttonStyle = [
-    styles.button,
-    {
-      backgroundColor: colors.background,
-      borderColor: colors.border,
-      bottom: insets.bottom + 100, // Position above the composer
-      alignSelf: 'center', // Center horizontally
-    },
-  ];
-
   const iconStyle = {
     opacity: animatedValue,
     transform: [
@@ -57,7 +47,16 @@ export function ScrollToBottomButton({
 
   return (
     <Animated.View
-      style={[buttonStyle, iconStyle]}
+      style={[
+        styles.button,
+        {
+          backgroundColor: colors.background,
+          borderColor: colors.border,
+          bottom: insets.bottom + 100,
+          alignSelf: 'center',
+        },
+        iconStyle,
+      ]}
       pointerEvents={visible ? 'auto' : 'none'}
     >
       <Pressable
