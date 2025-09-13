@@ -11,6 +11,7 @@ export function useScrollToBottomButton({
 }: UseScrollToBottomButtonProps) {
   const [showButton, setShowButton] = useState(false);
   const [isAtBottom, setIsAtBottom] = useState(true);
+  const [programmaticScroll, setProgrammaticScroll] = useState(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastScrollTimeRef = useRef<number>(0);
 
@@ -41,12 +42,14 @@ export function useScrollToBottomButton({
       if (atBottom) {
         // If at bottom, hide button immediately
         setShowButton(false);
-      } else if (messagesLength > 1) {
-        // Show button if not at bottom and there are messages
+        // Reset programmatic scroll flag when we reach bottom
+        setProgrammaticScroll(false);
+      } else if (messagesLength > 1 && !programmaticScroll) {
+        // Show button if not at bottom, there are messages, and not in programmatic scroll
         setShowButton(true);
       }
     },
-    [userScrolled, messagesLength]
+    [userScrolled, messagesLength, programmaticScroll]
   );
 
   // Reset button visibility when new messages arrive (but only if auto-scroll is active)
@@ -69,6 +72,12 @@ export function useScrollToBottomButton({
   // Function to manually hide the button (called when scroll-to-bottom is triggered)
   const hideButton = useCallback(() => {
     setShowButton(false);
+    setProgrammaticScroll(true);
+
+    // Reset programmatic scroll flag after animation completes
+    setTimeout(() => {
+      setProgrammaticScroll(false);
+    }, 600);
   }, []);
 
   return {

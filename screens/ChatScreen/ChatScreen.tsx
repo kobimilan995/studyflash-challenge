@@ -83,7 +83,7 @@ export function ChatScreen({
 
   const handleScrollToBottom = () => {
     scrollFlashListToBottom(flashListRef, messages.length, true);
-    // Hide the button immediately when clicked
+    // Hide the button and mark as programmatic scroll
     hideButton();
   };
 
