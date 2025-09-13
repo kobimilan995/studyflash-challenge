@@ -2,6 +2,7 @@ import { FlashListRef } from '@shopify/flash-list';
 import { UIMessage } from 'ai';
 import React, { useCallback, useEffect, useRef } from 'react';
 import { MessageListItemType } from '../../../components/MessageListItem';
+import { scrollFlashListToBottom, scrollFlashListToBottomImmediate } from '../../../utils';
 
 interface UseAutoScrollProps {
   messages: UIMessage[];
@@ -21,56 +22,14 @@ export function useAutoScroll({
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Scroll to bottom function using multiple methods for reliability
+  // Scroll to bottom function using utility method
   const scrollToBottom = useCallback(() => {
-    if (!scrollViewRef.current) return;
-
-    try {
-      // Method 1: Try scrollToIndex first (most reliable for FlashList)
-      const dataLength = messages.length;
-      if (dataLength > 0) {
-        scrollViewRef.current.scrollToIndex({
-          index: dataLength - 1,
-          animated: true,
-          viewPosition: 1 // 1 = bottom of viewport
-        });
-        return;
-      }
-
-      // Method 2: Fallback to scrollToOffset
-      scrollViewRef.current.scrollToOffset({
-        offset: 999999,
-        animated: true
-      });
-    } catch {
-      // Silently handle scroll errors
-    }
+    scrollFlashListToBottom(scrollViewRef, messages.length, true);
   }, [scrollViewRef, messages.length]);
 
   // Scroll to bottom without animation (for streaming)
   const scrollToBottomImmediate = useCallback(() => {
-    if (!scrollViewRef.current) return;
-
-    try {
-      // Method 1: Try scrollToIndex first
-      const dataLength = messages.length;
-      if (dataLength > 0) {
-        scrollViewRef.current.scrollToIndex({
-          index: dataLength - 1,
-          animated: false,
-          viewPosition: 1
-        });
-        return;
-      }
-
-      // Method 2: Fallback to scrollToOffset
-      scrollViewRef.current.scrollToOffset({
-        offset: 999999,
-        animated: false
-      });
-    } catch {
-      // Silently handle scroll errors
-    }
+    scrollFlashListToBottomImmediate(scrollViewRef, messages.length);
   }, [scrollViewRef, messages.length]);
 
   // Auto-scroll to bottom when new messages arrive or during streaming
