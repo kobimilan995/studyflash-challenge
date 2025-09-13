@@ -1,6 +1,14 @@
 import { useTheme } from '@/hooks/useTheme';
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import {
+  Modal,
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { IconSymbol } from './ui/IconSymbol';
 
 interface WeatherWidgetProps {
   data: any;
@@ -8,16 +16,31 @@ interface WeatherWidgetProps {
 
 export function WeatherWidget({ data }: WeatherWidgetProps) {
   const { colors } = useTheme();
+  const [isUnitModalVisible, setIsUnitModalVisible] = useState(false);
+  const [temperatureUnit, setTemperatureUnit] = useState<
+    'celsius' | 'fahrenheit'
+  >('celsius');
 
-  // Extract the actual weather data from the nested structure
   const weatherData = data.output || data;
   const location = weatherData.location || 'Unknown';
 
-  // Convert Fahrenheit to Celsius for display
   const celsius = Math.round(((weatherData.temperature - 32) * 5) / 9);
   const condition = weatherData.condition || 'Mostly cloudy';
+
+  const convertToDisplayUnit = (tempInCelsius: number) => {
+    return temperatureUnit === 'celsius'
+      ? tempInCelsius
+      : Math.round((tempInCelsius * 9) / 5 + 32);
+  };
+
+  const getUnitSymbol = () => (temperatureUnit === 'celsius' ? '°C' : '°F');
+
   const high = weatherData.high || Math.round(celsius + 4);
   const low = weatherData.low || Math.round(celsius - 4);
+
+  const displayTemp = convertToDisplayUnit(celsius);
+  const displayHigh = convertToDisplayUnit(high);
+  const displayLow = convertToDisplayUnit(low);
 
   const styles = createWeatherWidgetStyles();
 
@@ -25,7 +48,22 @@ export function WeatherWidget({ data }: WeatherWidgetProps) {
     <View style={styles.container}>
       {/* Header with temperature and condition */}
       <View style={styles.header}>
-        <Text style={styles.temperature}>{celsius}°C</Text>
+        <View style={styles.temperatureContainer}>
+          <Text style={styles.temperature}>
+            {displayTemp}
+            {getUnitSymbol()}
+          </Text>
+          <TouchableOpacity
+            style={styles.unitButton}
+            onPress={() => setIsUnitModalVisible(true)}
+          >
+            <IconSymbol
+              name="chevron.down"
+              size={16}
+              color={colors.textSecondary}
+            />
+          </TouchableOpacity>
+        </View>
         <Text style={styles.weatherIcon}>↗</Text>
         <Text style={styles.condition}>{condition}</Text>
       </View>
@@ -42,7 +80,7 @@ export function WeatherWidget({ data }: WeatherWidgetProps) {
           <Text style={styles.day}>Friday</Text>
         </View>
         <Text style={styles.dayTemps}>
-          {high}° {low}°
+          {displayHigh}° {displayLow}°
         </Text>
       </View>
 
@@ -57,7 +95,7 @@ export function WeatherWidget({ data }: WeatherWidgetProps) {
         <View style={styles.detailItem}>
           <Text style={styles.bullet}>•</Text>
           <Text style={styles.detailText}>
-            Conditions: {condition}, around {celsius} °C
+            Conditions: {condition}, around {displayTemp} {getUnitSymbol()}
           </Text>
         </View>
 
@@ -65,20 +103,85 @@ export function WeatherWidget({ data }: WeatherWidgetProps) {
           <Text style={styles.bullet}>•</Text>
           <Text style={styles.detailText}>
             Later: Expect some showers this evening, then cloudy overnight with
-            temperatures gradually dropping to about 14-16 °C
+            temperatures gradually dropping to about {convertToDisplayUnit(14)}-
+            {convertToDisplayUnit(16)} {getUnitSymbol()}
           </Text>
         </View>
 
         <View style={styles.detailItem}>
           <Text style={styles.bullet}>•</Text>
           <Text style={styles.detailText}>
-            Early tomorrow morning: Rain is likely, with lows around 14°C
+            Early tomorrow morning: Rain is likely, with lows around{' '}
+            {convertToDisplayUnit(14)}
+            {getUnitSymbol()}
           </Text>
-          <TouchableOpacity style={styles.expandButton}>
-            <Text style={{ fontSize: 12, color: colors.textSecondary }}>⌄</Text>
-          </TouchableOpacity>
         </View>
       </View>
+
+      {/* Temperature Unit Selection Modal */}
+      <Modal
+        visible={isUnitModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setIsUnitModalVisible(false)}
+      >
+        <Pressable
+          style={styles.modalOverlay}
+          onPress={() => setIsUnitModalVisible(false)}
+        >
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Temperature Unit</Text>
+
+            <TouchableOpacity
+              style={[
+                styles.unitOption,
+                temperatureUnit === 'celsius' && styles.selectedUnitOption,
+              ]}
+              onPress={() => {
+                setTemperatureUnit('celsius');
+                setIsUnitModalVisible(false);
+              }}
+            >
+              <Text
+                style={[
+                  styles.unitOptionText,
+                  temperatureUnit === 'celsius' &&
+                    styles.selectedUnitOptionText,
+                ]}
+              >
+                Celsius (°C)
+              </Text>
+              {temperatureUnit === 'celsius' && (
+                <IconSymbol name="checkmark" size={20} color={colors.accent} />
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.unitOption,
+                temperatureUnit === 'fahrenheit' && styles.selectedUnitOption,
+              ]}
+              onPress={() => {
+                setTemperatureUnit('fahrenheit');
+                setIsUnitModalVisible(false);
+              }}
+            >
+              <Text
+                style={[
+                  styles.unitOptionText,
+                  temperatureUnit === 'fahrenheit' &&
+                    styles.selectedUnitOptionText,
+                ]}
+              >
+                Fahrenheit (°F)
+              </Text>
+              {temperatureUnit === 'fahrenheit' && (
+                <IconSymbol name="checkmark" size={20} color={colors.accent} />
+              )}
+            </TouchableOpacity>
+          </View>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
@@ -96,11 +199,19 @@ function createWeatherWidgetStyles() {
       alignItems: 'center',
       marginBottom: 12,
     },
+    temperatureContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginRight: 8,
+    },
     temperature: {
       fontSize: 28,
       fontWeight: 'bold',
       color: '#353740',
-      marginRight: 8,
+    },
+    unitButton: {
+      marginLeft: 4,
+      padding: 4,
     },
     weatherIcon: {
       fontSize: 16,
@@ -171,6 +282,53 @@ function createWeatherWidgetStyles() {
       alignItems: 'center',
       justifyContent: 'center',
       marginLeft: 8,
+    },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    modalContent: {
+      backgroundColor: '#ffffff',
+      borderRadius: 12,
+      padding: 20,
+      margin: 20,
+      minWidth: 200,
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+    },
+    modalTitle: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: '#353740',
+      marginBottom: 16,
+      textAlign: 'center',
+    },
+    unitOption: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 8,
+      marginBottom: 8,
+    },
+    selectedUnitOption: {
+      backgroundColor: '#f0f9ff',
+    },
+    unitOptionText: {
+      fontSize: 16,
+      color: '#353740',
+    },
+    selectedUnitOptionText: {
+      fontWeight: '600',
     },
   });
 }
