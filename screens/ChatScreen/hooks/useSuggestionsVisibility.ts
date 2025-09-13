@@ -6,7 +6,7 @@ interface UseSuggestionsVisibilityProps {
 }
 
 export function useSuggestionsVisibility({ messages }: UseSuggestionsVisibilityProps) {
-  const [showSuggestions, setShowSuggestions] = useState(messages.length === 0);
+  const [showSuggestions, setShowSuggestions] = useState(true);
 
   // Hide suggestions when first message is sent
   useEffect(() => {
