@@ -67,15 +67,15 @@ screens/ChatScreen/
     └── useSuggestionsVisibility.ts # Suggestion display logic
 
 components/
-├── Message.tsx            # Individual message with actions and streaming
-├── MessageListItem.tsx    # FlashList item renderer for different message types
-├── Composer.tsx           # Multiline input with keyboard handling
-├── ChatHeader.tsx         # Top navigation bar
-├── TypingIndicator.tsx    # Animated typing indicator
-├── MessageSuggestions.tsx # Empty state suggestions
-├── ScrollToBottomButton.tsx # Animated scroll-to-bottom button
-├── WeatherWidget.tsx      # Weather tool widget with ChatGPT-style UI
-└── ThemedText.tsx         # Themed text component
+├── Message.tsx                # Individual message with actions and streaming
+├── MessageListItem.tsx        # FlashList item renderer for different message types
+├── Composer.tsx               # Multiline input with keyboard handling
+├── ChatHeader.tsx             # Top navigation bar
+├── TypingIndicator.tsx        # Animated typing indicator
+├── MessageSuggestions.tsx     # Empty state suggestions
+├── ScrollToBottomButton.tsx   # Animated scroll-to-bottom button
+├── WeatherWidget.tsx          # Weather tool widget with ChatGPT-style UI
+└── ThemedText.tsx             # Themed text component
 ```
 
 ### **State Management**
@@ -219,7 +219,7 @@ Features:
 1. **Install dependencies:**
 
    ```bash
-   pnpm install
+   npm install (or yarn, pnpm)
    ```
 
 2. **Set up environment variables:**
