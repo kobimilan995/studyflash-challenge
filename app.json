@@ -8,9 +8,9 @@
     "scheme": "studyflash-mobile-challenge-starter",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.kobimilan995.studyflash-mobile-challenge-starter"
     },
     "android": {
       "adaptiveIcon": {
