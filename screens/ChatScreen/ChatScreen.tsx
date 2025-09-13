@@ -42,22 +42,25 @@ export function ChatScreen({
   const insets = useSafeAreaInsets();
   const flashListRef = useRef<FlashListRef<MessageListItemType>>(null);
 
-  // Custom hooks
   const { userScrolled, handleScroll } = useScrollState({
     messages,
     isLoading,
   });
+
   const { showSuggestions } = useSuggestionsVisibility({ messages });
+
   const { listData } = useFlashlistItems({
     messages,
     isLoading,
     error,
     showSuggestions,
   });
-  const { showButton, handleScrollForButton, hideButton } = useScrollToBottomButton({
-    userScrolled,
-    messagesLength: messages.length,
-  });
+
+  const { showButton, handleScrollForButton, hideButton } =
+    useScrollToBottomButton({
+      userScrolled,
+      messagesLength: messages.length,
+    });
 
   // Note: errorAnim is available but not currently used in FlashList implementation
   useChatAnimations({
@@ -65,7 +68,6 @@ export function ChatScreen({
     error,
   });
 
-  // Auto-scroll behavior
   useAutoScroll({
     messages,
     isLoading,
@@ -83,11 +85,9 @@ export function ChatScreen({
 
   const handleScrollToBottom = () => {
     scrollFlashListToBottom(flashListRef, messages.length, true);
-    // Hide the button and mark as programmatic scroll
     hideButton();
   };
 
-  // Combined scroll handler for both existing scroll state and button visibility
   const handleCombinedScroll = (event: any) => {
     handleScroll(event);
     handleScrollForButton(event);
