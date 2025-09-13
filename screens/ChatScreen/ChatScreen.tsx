@@ -64,7 +64,6 @@ export function ChatScreen({
       messagesLength: messages.length,
     });
 
-  // Note: errorAnim is available but not currently used in FlashList implementation
   useChatAnimations({
     messagesLength: messages.length,
     error,
@@ -82,7 +81,7 @@ export function ChatScreen({
   };
 
   const handleAttach = () => {
-    // Stub action - just log for now
+    // TODO: Implement file attachment functionality
   };
 
   const handleScrollToBottom = () => {
