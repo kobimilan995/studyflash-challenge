@@ -2,7 +2,14 @@ import { useTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import React, { useEffect, useRef } from 'react';
-import { Alert, Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  Animated,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 interface ChatHeaderProps {
   onNewChat?: () => void;
@@ -10,7 +17,11 @@ interface ChatHeaderProps {
   onClearMessages?: () => void;
 }
 
-export function ChatHeader({ onNewChat, onSettings, onClearMessages }: ChatHeaderProps) {
+export function ChatHeader({
+  onNewChat,
+  onSettings,
+  onClearMessages,
+}: ChatHeaderProps) {
   const { colors } = useTheme();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(-20)).current;
@@ -73,11 +84,16 @@ export function ChatHeader({ onNewChat, onSettings, onClearMessages }: ChatHeade
       ]}
     >
       <View style={styles.leftSection}>
-        <TouchableOpacity style={styles.menuButton} onPress={handleNewChat}>
+        <TouchableOpacity style={styles.menuButton} onPress={() => {}}>
           <Ionicons name="menu-outline" size={20} color={colors.icon} />
         </TouchableOpacity>
         <Text style={styles.title}>ChatGPT 5</Text>
-        <Ionicons name="chevron-forward" size={16} color={colors.icon} style={styles.arrowIcon} />
+        <Ionicons
+          name="chevron-forward"
+          size={16}
+          color={colors.icon}
+          style={styles.arrowIcon}
+        />
       </View>
       <View style={styles.rightSection}>
         <TouchableOpacity style={styles.button} onPress={handleNewChat}>
