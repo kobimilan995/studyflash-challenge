@@ -2,14 +2,15 @@ import { useTheme } from '@/hooks/useTheme';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import React, { useEffect, useRef } from 'react';
-import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface ChatHeaderProps {
   onNewChat?: () => void;
   onSettings?: () => void;
+  onClearMessages?: () => void;
 }
 
-export function ChatHeader({ onNewChat, onSettings }: ChatHeaderProps) {
+export function ChatHeader({ onNewChat, onSettings, onClearMessages }: ChatHeaderProps) {
   const { colors } = useTheme();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(-20)).current;
@@ -28,11 +29,30 @@ export function ChatHeader({ onNewChat, onSettings }: ChatHeaderProps) {
         useNativeDriver: true,
       }),
     ]).start();
-  }, []);
+  }, [fadeAnim, slideAnim]);
 
   const handleNewChat = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    onNewChat?.();
+
+    Alert.alert(
+      'Start New Chat',
+      'Are you sure you want to start a new chat? Your current conversation might get lost.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Start New Chat',
+          style: 'destructive',
+          onPress: () => {
+            onClearMessages?.();
+            onNewChat?.();
+          },
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   const handleSettings = () => {

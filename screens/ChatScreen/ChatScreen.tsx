@@ -29,6 +29,7 @@ interface ChatScreenProps {
   messages: UIMessage[];
   isLoading: boolean;
   onSendMessage: (message: string) => void;
+  onClearMessages?: () => void;
   error?: Error | null;
 }
 
@@ -36,6 +37,7 @@ export function ChatScreen({
   messages,
   isLoading,
   onSendMessage,
+  onClearMessages,
   error,
 }: ChatScreenProps) {
   const { colors } = useTheme();
@@ -97,7 +99,7 @@ export function ChatScreen({
 
   return (
     <SafeAreaView style={styles.container}>
-      <ChatHeader />
+      <ChatHeader onClearMessages={onClearMessages} />
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}

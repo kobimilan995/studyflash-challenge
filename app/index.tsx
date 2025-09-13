@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 export default function App() {
   const [isWaitingForResponse, setIsWaitingForResponse] = useState(false);
 
-  const { messages, error, sendMessage } = useChat({
+  const { messages, error, sendMessage, setMessages } = useChat({
     transport: new DefaultChatTransport({
       fetch: expoFetch as unknown as typeof globalThis.fetch,
       api: generateAPIUrl('/api/chat'),
@@ -22,6 +22,11 @@ export default function App() {
   const handleSendMessage = (message: string) => {
     setIsWaitingForResponse(true);
     sendMessage({ text: message });
+  };
+
+  const handleClearMessages = () => {
+    setMessages([]);
+    setIsWaitingForResponse(false);
   };
 
   // Reset waiting state when we get a new assistant message
@@ -40,6 +45,7 @@ export default function App() {
       messages={messages}
       isLoading={isWaitingForResponse}
       onSendMessage={handleSendMessage}
+      onClearMessages={handleClearMessages}
       error={error}
     />
   );
