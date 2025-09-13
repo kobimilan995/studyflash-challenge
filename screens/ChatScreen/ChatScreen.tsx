@@ -1,26 +1,22 @@
 import { useTheme } from '@/hooks/useTheme';
+import { FlashList, FlashListRef } from '@shopify/flash-list';
 import { UIMessage } from 'ai';
 import React, { useRef } from 'react';
-import {
-  Animated,
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import { KeyboardAvoidingView, Platform, View } from 'react-native';
 import {
   SafeAreaView,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 import { ChatHeader } from '../../components/ChatHeader';
 import { Composer } from '../../components/Composer';
-import { Message } from '../../components/Message';
-import { MessageSuggestions } from '../../components/MessageSuggestions';
-import { TypingIndicator } from '../../components/TypingIndicator';
+import {
+  MessageListItem,
+  MessageListItemType,
+} from '../../components/MessageListItem';
 import {
   useAutoScroll,
   useChatAnimations,
+  useFlashlistItems,
   useScrollState,
   useSuggestionsVisibility,
 } from './hooks';
@@ -41,12 +37,23 @@ export function ChatScreen({
 }: ChatScreenProps) {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
-  const scrollViewRef = useRef<ScrollView | null>(null);
+  const flashListRef = useRef<FlashListRef<MessageListItemType>>(null);
 
   // Custom hooks
-  const { userScrolled, handleScroll } = useScrollState({ messages });
+  const { userScrolled, handleScroll } = useScrollState({
+    messages,
+    isLoading,
+  });
   const { showSuggestions } = useSuggestionsVisibility({ messages });
-  const { fadeAnim, errorAnim } = useChatAnimations({
+  const { listData } = useFlashlistItems({
+    messages,
+    isLoading,
+    error,
+    showSuggestions,
+  });
+
+  // Note: errorAnim is available but not currently used in FlashList implementation
+  useChatAnimations({
     messagesLength: messages.length,
     error,
   });
@@ -56,7 +63,7 @@ export function ChatScreen({
     messages,
     isLoading,
     userScrolled,
-    scrollViewRef,
+    scrollViewRef: flashListRef,
   });
 
   const handleSuggestionPress = (suggestion: string) => {
@@ -66,6 +73,7 @@ export function ChatScreen({
   const handleAttach = () => {
     // Stub action - just log for now
   };
+
 
   const styles = createChatScreenStyles({ colors });
 
@@ -78,51 +86,31 @@ export function ChatScreen({
         keyboardVerticalOffset={Platform.OS === 'ios' ? -insets.bottom : 0}
       >
         <View style={styles.container}>
-          <ScrollView
-            ref={scrollViewRef}
-            style={styles.scrollView}
-            contentContainerStyle={styles.contentContainer}
-            onScroll={handleScroll}
-            scrollEventThrottle={16}
-            showsVerticalScrollIndicator={false}
-          >
-            {showSuggestions && (
-              <View style={styles.suggestionsContainer}>
-                <MessageSuggestions onSuggestionPress={handleSuggestionPress} />
-              </View>
-            )}
-
-            <Animated.View style={{ opacity: fadeAnim }}>
-              {messages.map(message => (
-                <Message
-                  key={message.id}
-                  message={message}
-                  isStreaming={false}
+          <View style={styles.flashListContainer}>
+            <FlashList
+              ref={flashListRef}
+              data={listData}
+              renderItem={({ item }) => (
+                <MessageListItem
+                  item={item}
+                  onSuggestionPress={handleSuggestionPress}
                 />
-              ))}
-
-              {isLoading && <TypingIndicator />}
-            </Animated.View>
-
-            {error && (
-              <Animated.View
-                style={[
-                  styles.errorContainer,
-                  {
-                    opacity: errorAnim,
-                    transform: [
-                      { scale: errorAnim },
-                      { translateY: Animated.multiply(errorAnim, -10) },
-                    ],
-                  },
-                ]}
-              >
-                <Text style={styles.errorText}>
-                  {error.message || 'Something went wrong. Please try again.'}
-                </Text>
-              </Animated.View>
-            )}
-          </ScrollView>
+              )}
+              keyExtractor={item => item.id}
+              getItemType={item => item.type}
+              onScroll={handleScroll}
+              scrollEventThrottle={16}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={styles.contentContainer}
+              maintainVisibleContentPosition={{
+                autoscrollToTopThreshold: 0,
+              }}
+              drawDistance={500}
+              removeClippedSubviews={false}
+              keyboardShouldPersistTaps="handled"
+              keyboardDismissMode="on-drag"
+            />
+          </View>
 
           <Composer
             onSend={onSendMessage}

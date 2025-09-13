@@ -16,6 +16,9 @@ export const createChatScreenStyles = ({ colors }: ChatScreenStylesProps) =>
     scrollView: {
       flex: 1,
     },
+    flashListContainer: {
+      flex: 1,
+    },
     contentContainer: {
       paddingBottom: 20,
     },
