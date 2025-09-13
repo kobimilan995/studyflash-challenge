@@ -130,19 +130,7 @@ export function Message({ message, onLike, onDislike, onCopy }: MessageProps) {
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.actionButton} onPress={handleCopy}>
-            <Ionicons
-              name="volume-high-outline"
-              size={16}
-              color={colors.icon}
-            />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.actionButton} onPress={handleCopy}>
-            <Ionicons name="refresh-outline" size={16} color={colors.icon} />
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.actionButton} onPress={handleCopy}>
-            <Ionicons name="share-outline" size={16} color={colors.icon} />
+            <Ionicons name="copy-outline" size={16} color={colors.icon} />
           </TouchableOpacity>
         </View>
       )}
@@ -243,4 +231,3 @@ function createMessageStyles({
     },
   });
 }
-
