@@ -13,11 +13,14 @@ import {
   MessageListItem,
   MessageListItemType,
 } from '../../components/MessageListItem';
+import { ScrollToBottomButton } from '../../components/ScrollToBottomButton';
+import { scrollFlashListToBottom } from '../../utils';
 import {
   useAutoScroll,
   useChatAnimations,
   useFlashlistItems,
   useScrollState,
+  useScrollToBottomButton,
   useSuggestionsVisibility,
 } from './hooks';
 import { createChatScreenStyles } from './styles';
@@ -51,6 +54,10 @@ export function ChatScreen({
     error,
     showSuggestions,
   });
+  const { showButton, handleScrollForButton, hideButton } = useScrollToBottomButton({
+    userScrolled,
+    messagesLength: messages.length,
+  });
 
   // Note: errorAnim is available but not currently used in FlashList implementation
   useChatAnimations({
@@ -74,6 +81,17 @@ export function ChatScreen({
     // Stub action - just log for now
   };
 
+  const handleScrollToBottom = () => {
+    scrollFlashListToBottom(flashListRef, messages.length, true);
+    // Hide the button immediately when clicked
+    hideButton();
+  };
+
+  // Combined scroll handler for both existing scroll state and button visibility
+  const handleCombinedScroll = (event: any) => {
+    handleScroll(event);
+    handleScrollForButton(event);
+  };
 
   const styles = createChatScreenStyles({ colors });
 
@@ -98,7 +116,7 @@ export function ChatScreen({
               )}
               keyExtractor={item => item.id}
               getItemType={item => item.type}
-              onScroll={handleScroll}
+              onScroll={handleCombinedScroll}
               scrollEventThrottle={16}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={styles.contentContainer}
@@ -116,6 +134,11 @@ export function ChatScreen({
             onSend={onSendMessage}
             disabled={isLoading}
             onAttach={handleAttach}
+          />
+
+          <ScrollToBottomButton
+            visible={showButton}
+            onPress={handleScrollToBottom}
           />
         </View>
       </KeyboardAvoidingView>
