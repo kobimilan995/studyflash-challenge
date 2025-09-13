@@ -72,6 +72,7 @@ export function Message({ message, onLike, onDislike, onCopy }: MessageProps) {
 
   const isUser = message.role === 'user';
   const maxWidth = screenWidth * 0.8;
+  const hasWeatherTool = message.parts.some(part => part.type === 'tool-weather');
 
   // Removed timestamp generation for mock
 
@@ -129,9 +130,11 @@ export function Message({ message, onLike, onDislike, onCopy }: MessageProps) {
             />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.actionButton} onPress={handleCopy}>
-            <Ionicons name="copy-outline" size={16} color={colors.icon} />
-          </TouchableOpacity>
+          {!hasWeatherTool && (
+            <TouchableOpacity style={styles.actionButton} onPress={handleCopy}>
+              <Ionicons name="copy-outline" size={16} color={colors.icon} />
+            </TouchableOpacity>
+          )}
         </View>
       )}
     </Animated.View>
